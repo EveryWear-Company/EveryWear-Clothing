@@ -1,11 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EveryWear Clothing - Wear It Every Day</title>
+
+<!-- PyScript -->
+<link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+<script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- YOUR CSS FILE -->
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo-wrap">
+    <img src="logo.png" alt="EveryWear Logo">
+  </div>
+  <ul class="nav-links">
+    <li><a href="#">HOME</a></li>
+    <li><a href="#shop">SHOP</a></li>
+    <li><a href="#">ABOUT</a></li>
+  </ul>
+  <div class="nav-actions">
+    <span id="user-display"></span>
+    <button id="logout-btn" style="display:none;">LOGOUT</button>
+    <button class="cart-btn" id="open-cart">CART <span id="cart-count">0</span></button>
+    <button class="login-btn" id="open-login">LOGIN</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <h1>WEAR IT<br><span>EVERY DAY</span><br>EVERYWEAR.</h1>
+    <p>Minimal drops. Maximum style. The official EveryWear collection - designed for everyone, everyday.</p>
+    <button class="cta" id="shop-now">SHOP NOW →</button>
+  </div>
+  <div class="hero-img">
+    <img src="shirt1.jpg" alt="Featured Shirt">
+  </div>
+</section>
+
+<!-- FILTER -->
+<div class="filter-bar" id="shop">
+  <button class="active" data-filter="all">All</button>
+  <button data-filter="unisex">Unisex</button>
+  <button data-filter="graphic">Graphic Tees</button>
+  <button data-filter="street">Streetwear</button>
+</div>
+
+<!-- PRODUCTS - Filled by PyScript -->
+<section class="products" id="product-grid"></section>
+
+<!-- LOGIN MODAL -->
+<div class="modal-bg" id="login-modal">
+  <div class="modal">
+    <span class="close" id="close-login">&times;</span>
+    <h2>WELCOME BACK</h2>
+    <p style="text-align:center;font-size:13px;color:#666">Login to add items to your cart</p>
+    <input type="text" id="login-username" placeholder="Username">
+    <p class="error" id="login-user-error"></p>
+    <input type="password" id="login-password" placeholder="Password">
+    <p class="error" id="login-pass-error"></p>
+    <p class="error" id="login-general-error"></p>
+    <p class="success" id="login-success"></p>
+    <button class="main" id="login-btn">LOGIN</button>
+    <div class="switch">Don\'t have an account? <button id="to-register">Create Account</button></div>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-bg" id="register-modal">
+  <div class="modal">
+    <span class="close" id="close-register">&times;</span>
+    <h2>CREATE ACCOUNT</h2>
+    <input type="text" id="reg-username" placeholder="Username (min 3 chars)">
+    <p class="error" id="reg-user-error"></p>
+    <input type="text" id="reg-fullname" placeholder="Full Name">
+    <p class="error" id="reg-name-error"></p>
+    <input type="email" id="reg-email" placeholder="Email Address">
+    <p class="error" id="reg-email-error"></p>
+    <input type="password" id="reg-password" placeholder="Password (8+ chars, 1 Uppercase, 1 Number)">
+    <p class="error" id="reg-pass-error"></p>
+    <input type="password" id="reg-confirm" placeholder="Confirm Password">
+    <p class="error" id="reg-confirm-error"></p>
+    <p class="success" id="reg-success"></p>
+    <button class="main" id="register-btn">REGISTER</button>
+    <div class="switch">Already have an account? <button id="to-login">Login</button></div>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal-bg" id="cart-modal">
+  <div class="modal">
+    <span class="close" id="close-cart">&times;</span>
+    <h2>YOUR CART</h2>
+    <div class="cart-items" id="cart-items"></div>
+    <h3 id="cart-total" style="text-align:right">Total: $0.00</h3>
+    <button class="main" id="checkout-btn">CHECKOUT</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <img src="logo.png" style="height:40px;filter:invert(1);margin-bottom:10px"><br>
+  <p>© 2025 EveryWear Clothing. All Rights Reserved. Wear It Every Day.</p>
+</footer>
+
+<!-- YOUR PYSCRIPT FILE -->
+<script type="py" src="main.py"></script>
+
 </body>
 </html>
