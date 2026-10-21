@@ -4,15 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EveryWear Clothing - Wear It Every Day</title>
-
-<!-- PyScript -->
 <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
 <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-
-<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-<!-- YOUR CSS FILE -->
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,9 +17,9 @@
     <img src="assets/logo.jpeg" alt="EveryWear Logo">
   </div>
   <ul class="nav-links">
-    <li><a href="#">HOME</a></li>
-    <li><a href="#shop">SHOP</a></li>
-    <li><a href="#">ABOUT</a></li>
+    <li><a id="nav-home">HOME</a></li>
+    <li><a id="nav-shop">SHOP</a></li>
+    <li><a id="nav-about">ABOUT</a></li>
   </ul>
   <div class="nav-actions">
     <span id="user-display"></span>
@@ -35,32 +29,76 @@
   </div>
 </nav>
 
-<!-- Added Video ADS -->
-<section class="hero">
-  <div>
-    <h1>WEAR IT<br><span>EVERY DAY</span><br>EVERYWEAR.</h1>
-    <p>Minimal drops. Maximum style. The official EveryWear collection - designed for everyone, everyday.</p>
-    <button class="cta" id="shop-now">SHOP NOW →</button>
-  </div>
-  <div class="hero-video">
-    <video autoplay muted loop playsinline controls poster="assets/shirt1.jpg">
-      <source src="assets/ads.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
+<!-- LANDING PAGE -->
+<section id="landing-page">
+  <div class="hero">
+    <div>
+      <h1>WEAR IT<br><span>EVERY DAY</span><br>EVERYWEAR.</h1>
+      <p>Minimal drops. Maximum style. The official EveryWear collection - designed for everyone, everyday.</p>
+      <button class="cta" id="shop-now">SHOP NOW →</button>
+    </div>
+    <div class="hero-img">
+      <div class="hero-placeholder">EVERY WEAR CLOTHING!</div>
+    </div>
   </div>
 </section>
-<!-- FILTER -->
-<div class="filter-bar" id="shop">
-  <button class="active" data-filter="all">All</button>
-  <button data-filter="unisex">Unisex</button>
-  <button data-filter="graphic">Graphic Tees</button>
-  <button data-filter="street">Streetwear</button>
+
+<!-- SHOP PAGE -->
+<section id="shop-page" style="display:none;">
+  <div class="filter-bar">
+    <button class="active" data-filter="all">All</button>
+    <button data-filter="unisex">Unisex</button>
+    <button data-filter="men">Men</button>
+    <button data-filter="women">Women</button>
+    <button data-filter="streetwear">Streetwear</button>
+  </div>
+  <section class="products" id="product-grid"></section>
+</section>
+
+<!-- ABOUT PAGE -->
+<section id="about-page" style="display:none;">
+  <div class="about-container">
+    <h1>ABOUT EVERYWEAR</h1>
+    <p class="about-tagline">Wear It Every Day.</p>
+    <div class="about-grid">
+      <div>
+        <h3>Our Story</h3>
+        <p>EveryWear was born from a simple idea: clothing should be comfortable, stylish, and for everyone. We create minimal, timeless pieces that you can wear every single day.</p>
+        <h3>Our Mission</h3>
+        <p>To provide high-quality, affordable streetwear that empowers self-expression. Designed in Manila, made for the world.</p>
+      </div>
+      <div>
+        <h3>Why EveryWear?</h3>
+        <ul>
+          <li>✓ Premium Cotton 100%</li>
+          <li>✓ Unisex & Inclusive Sizing</li>
+          <li>✓ Limited Drops - Never Restocked</li>
+          <li>✓ Free Shipping over ₱1000</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT DETAIL -->
+<div class="modal-bg" id="product-modal">
+  <div class="modal product-modal">
+    <span class="close" id="close-product">&times;</span>
+    <img id="p-img" src="" alt="">
+    <div class="p-detail">
+      <p id="p-cat" style="font-size:11px;letter-spacing:1px;color:#888"></p>
+      <h2 id="p-name" style="text-align:left"></h2>
+      <p id="p-price" style="font-weight:900;font-size:22px;margin:10px 0"></p>
+      <p id="p-desc" style="color:#555;font-size:14px;line-height:1.6"></p>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="main" id="p-add-cart" style="flex:1">Add to Cart</button>
+        <button class="main" id="p-buy-now" style="flex:1;background:#fff;color:#111;border:1px solid #111">Buy Now</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- PRODUCTS - Filled by PyScript -->
-<section class="products" id="product-grid"></section>
-
-<!-- LOGIN MODAL -->
+<!-- LOGIN PAGE -->
 <div class="modal-bg" id="login-modal">
   <div class="modal">
     <span class="close" id="close-login">&times;</span>
@@ -70,10 +108,9 @@
     <p class="error" id="login-user-error"></p>
     <input type="password" id="login-password" placeholder="Password">
     <p class="error" id="login-pass-error"></p>
-    <p class="error" id="login-general-error"></p>
-    <p class="success" id="login-success"></p>
+    <p class="error" id="login-general-error" style="text-align:center;font-weight:700"></p>
     <button class="main" id="login-btn">LOGIN</button>
-    <div class="switch">Don\'t have an account? <button id="to-register">Create Account</button></div>
+    <div class="switch">Don't have an account? <button id="to-register">Create Account</button></div>
   </div>
 </div>
 
@@ -104,7 +141,7 @@
     <span class="close" id="close-cart">&times;</span>
     <h2>YOUR CART</h2>
     <div class="cart-items" id="cart-items"></div>
-    <h3 id="cart-total" style="text-align:right">Total: $0.00</h3>
+    <h3 id="cart-total" style="text-align:right">Total: ₱0.00</h3>
     <button class="main" id="checkout-btn">CHECKOUT</button>
   </div>
 </div>
@@ -112,12 +149,10 @@
 <div class="toast" id="toast"></div>
 
 <footer>
-  <img src="logo.png" style="height:40px;filter:invert(1);margin-bottom:10px"><br>
+  <img src="assets/logo.jpeg" style="height:40px;filter:invert(1);margin-bottom:10px"><br>
   <p>© 2025 EveryWear Clothing. All Rights Reserved. Wear It Every Day.</p>
 </footer>
 
-<!-- YOUR PYSCRIPT FILE -->
 <script type="py" src="main.py"></script>
-
 </body>
 </html>
