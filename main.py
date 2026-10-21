@@ -1,4 +1,4 @@
-# EveryWear - main.py - FIXED with create_proxy
+# EveryWear - main.py - FIXED v2 - All functions are now clickable
 from js import document, localStorage, window, console
 from pyodide.ffi import create_proxy
 import json
@@ -127,8 +127,29 @@ def open_product(event):
 
 def on_add_click(e):
     e.stopPropagation()
+    global selected_product, selected_size
+    selected_size = None
+    # clear old size selection
+    for b in document.querySelectorAll(".size-btn"): 
+        b.className = "size-btn"
+    se = document.getElementById("size-error")
+    if se: se.style.display = "none"
+    
+    # get product id from the Add to Cart button
     btn = e.currentTarget
-    handle_add_to_cart_from_data(btn.getAttribute("data-name"), float(btn.getAttribute("data-price")), btn.getAttribute("data-img"), btn.getAttribute("data-id"))
+    pid = btn.getAttribute("data-id")
+    for p in products:
+        if p["id"] == pid:
+            selected_product = p
+            break
+    # open the same size modal like when you click the shirt
+    if selected_product:
+        document.getElementById("p-img").src = selected_product["img"]
+        document.getElementById("p-cat").innerText = selected_product["cat"].upper()
+        document.getElementById("p-name").innerText = selected_product["name"].upper()
+        document.getElementById("p-price").innerText = f"₱{selected_product['price']}"
+        document.getElementById("p-desc").innerText = selected_product["desc"]
+        document.getElementById("product-modal").classList.add("open")
 
 def on_filter_click(e):
     b = e.currentTarget
