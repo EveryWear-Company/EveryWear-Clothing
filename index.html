@@ -83,20 +83,57 @@
   </div>
 </section>
 
-<!-- PRODUCT DETAIL PAGE -->
+<!-- PRODUCT DETAIL PAGE - ADDING WHAT SIZE -->
 <div class="modal-bg" id="product-modal">
-  <div class="modal product-modal">
+  <div class="modal product-modal-v2">
     <span class="close" id="close-product">&times;</span>
-    <img id="p-img" src="" alt="">
-    <div class="p-detail">
+    <div class="p-left">
+      <img id="p-img" src="" alt="">
+    </div>
+    <div class="p-right">
       <p id="p-cat" style="font-size:11px;letter-spacing:1px;color:#888"></p>
-      <h2 id="p-name" style="text-align:left"></h2>
-      <p id="p-price" style="font-weight:900;font-size:22px;margin:10px 0"></p>
-      <p id="p-desc" style="color:#555;font-size:14px;line-height:1.6"></p>
-      <div style="display:flex;gap:10px;margin-top:20px">
-        <button class="main" id="p-add-cart" style="flex:1">Add to Cart</button>
-        <button class="main" id="p-buy-now" style="flex:1;background:#fff;color:#111;border:1px solid #111">Buy Now</button>
+      <h2 id="p-name" style="text-align:left;line-height:1.1"></h2>
+      <p id="p-price" style="font-weight:900;font-size:20px;margin:8px 0 2px"></p>
+      <p style="font-size:11px;color:#888">Shipping calculated at checkout.</p>
+      
+      <p style="font-weight:900;margin-top:16px;letter-spacing:1px">SIZE</p>
+      <div class="size-options" id="size-options">
+        <button class="size-btn" data-size="S">S</button>
+        <button class="size-btn" data-size="M">M</button>
+        <button class="size-btn" data-size="L">L</button>
+        <button class="size-btn" data-size="XL">XL</button>
+        <button class="size-btn" data-size="2XL">2XL</button>
+        <button class="size-btn" data-size="3XL">3XL</button>
       </div>
+      <p style="font-size:11px;margin:6px 0;color:#111;text-decoration:underline;cursor:pointer">◧ Size Chart</p>
+      <p class="error" id="size-error" style="margin:4px 0"></p>
+      
+      <button class="main" id="p-add-cart" style="background:#7c3aed">ADD TO CART</button>
+      <button class="main" id="p-buy-now" style="background:#fff;color:#111;border:1px solid #111;margin-top:10px">Buy Now</button>
+
+      <details open style="margin-top:18px">
+        <summary style="font-weight:800;font-size:13px;cursor:pointer">PRODUCT INFORMATION</summary>
+        <p id="p-desc" style="color:#555;font-size:13px;line-height:1.6;margin-top:8px"></p>
+      </details>
+      <details style="margin-top:12px">
+        <summary style="font-weight:800;font-size:13px;cursor:pointer">PRODUCT DETAILS</summary>
+        <ul style="font-size:13px;color:#555;margin-top:8px;line-height:1.8;list-style:none">
+          <li>✓ 100% Cotton</li>
+          <li>✓ Classic fit</li>
+          <li>✓ Crew neck with rib collar</li>
+          <li>✓ Taped neck and shoulders</li>
+          <li>✓ Screenprint</li>
+        </ul>
+      </details>
+      <details style="margin-top:12px">
+        <summary style="font-weight:800;font-size:13px;cursor:pointer">MATERIALS & CARE</summary>
+        <ul style="font-size:13px;color:#555;margin-top:8px;line-height:1.8;list-style:none">
+          <li>Machine Wash Cold</li>
+          <li>Do Not Bleach</li>
+          <li>Tumble Dry Low</li>
+          <li>Do Not Iron</li>
+        </ul>
+      </details>
     </div>
   </div>
 </div>
