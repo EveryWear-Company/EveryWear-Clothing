@@ -17,9 +17,9 @@
     <img src="assets/logo.jpeg" alt="EveryWear Logo">
   </div>
   <ul class="nav-links">
-    <li><a id="nav-home">HOME</a></li>
-    <li><a id="nav-shop">SHOP</a></li>
-    <li><a id="nav-about">ABOUT</a></li>
+    <li><a id="nav-home" onclick="showPageJS('landing-page')">HOME</a></li>
+    <li><a id="nav-shop" onclick="showPageJS('shop-page')">SHOP</a></li>
+    <li><a id="nav-about" onclick="showPageJS('about-page')">ABOUT</a></li>
   </ul>
   <div class="nav-actions">
     <span id="user-display"></span>
@@ -29,16 +29,19 @@
   </div>
 </nav>
 
-<!-- LANDING PAGE -->
+<!-- LANDING PAGE WITH VIDEO ADS -->
 <section id="landing-page">
   <div class="hero">
     <div>
       <h1>WEAR IT<br><span>EVERY DAY</span><br>EVERYWEAR.</h1>
       <p>Minimal drops. Maximum style. The official EveryWear collection - designed for everyone, everyday.</p>
-      <button class="cta" id="shop-now">SHOP NOW →</button>
+      <button class="cta" id="shop-now" onclick="showPageJS('shop-page')">SHOP NOW →</button>
     </div>
     <div class="hero-img">
-      <div class="hero-placeholder">EVERY WEAR CLOTHING!</div>
+      <video autoplay muted loop playsinline controls poster="assets/shirt1.jpg">
+        <source src="assets/ads.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
     </div>
   </div>
 </section>
@@ -80,7 +83,7 @@
   </div>
 </section>
 
-<!-- PRODUCT DETAIL -->
+<!-- PRODUCT DETAIL PAGE -->
 <div class="modal-bg" id="product-modal">
   <div class="modal product-modal">
     <span class="close" id="close-product">&times;</span>
@@ -135,7 +138,7 @@
   </div>
 </div>
 
-<!-- CART MODEL -->
+<!-- CART PAGE -->
 <div class="modal-bg" id="cart-modal">
   <div class="modal">
     <span class="close" id="close-cart">&times;</span>
@@ -152,6 +155,17 @@
   <img src="assets/logo.jpeg" style="height:40px;filter:invert(1);margin-bottom:10px"><br>
   <p>© 2025 EveryWear Clothing. All Rights Reserved. Wear It Every Day.</p>
 </footer>
+
+<!-- BACKUP NAVIGATION - Works even if PyScript fails -->
+<script>
+function showPageJS(page){
+  document.getElementById('landing-page').style.display='none';
+  document.getElementById('shop-page').style.display='none';
+  document.getElementById('about-page').style.display='none';
+  document.getElementById(page).style.display='block';
+  window.scrollTo(0,0);
+}
+</script>
 
 <script type="py" src="main.py"></script>
 </body>
