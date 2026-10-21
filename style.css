@@ -1,4 +1,4 @@
-/* EveryWear - style.css - FIXED with Video Ads */
+/* EveryWear - style.css - FIXED ADDED PHONE AND TABLET SUPPORT AND ABOUT US PAGE */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
 body{background:#f8f8f8;color:#111}
 
@@ -16,7 +16,7 @@ nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #e
 #cart-count{position:absolute;top:-6px;right:-6px;background:#e63946;color:#fff;font-size:11px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center}
 .login-btn{background:transparent;border:1px solid #111;padding:9px 18px;border-radius:999px;cursor:pointer;font-weight:700}
 
-/* HERO - LANDING PAGE */
+/* LANDING PAGE */
 .hero{background:#f9f9f9;display:grid;grid-template-columns:1.1fr 0.9fr;align-items:center;padding:80px 5%;gap:30px;min-height:500px}
 .hero h1{font-family:'Bebas Neue',sans-serif;font-size:78px;line-height:0.9;letter-spacing:1px}
 .hero h1 span{background:#111;color:#fff;padding:0 10px}
@@ -50,7 +50,7 @@ nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #e
 .add-btn{width:100%;background:#111;color:#fff;border:none;padding:12px;border-radius:999px;font-weight:700;cursor:pointer;margin-top:10px}
 .add-btn:hover{background:#333}
 
-/* MODALS */
+/* PRODUCT MODEL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;place-items:center;z-index:200;padding:20px}
 .modal-bg.open{display:grid}
 .modal{background:#fff;width:100%;max-width:440px;border-radius:20px;padding:30px;position:relative;animation:pop .3s}
@@ -141,7 +141,7 @@ footer{background:#111;color:#fff;text-align:center;padding:30px 5%;margin-top:4
   footer{padding:24px 5%;font-size:12px}
   footer img{max-width:120px;object-fit:contain}
 }
-/* PRODUCT MODAL V2 - WITH SIZE LIKE PHOTO */
+/* PRODUCT SHIRT SIZES */
 .product-modal-v2{max-width:900px;display:grid;grid-template-columns:1fr 380px;gap:0;padding:0;overflow:hidden;background:#fff}
 .product-modal-v2 .close{color:#111;z-index:5}
 .p-left{background:#f1f1f1;display:grid;place-items:center;padding:20px}
@@ -154,7 +154,7 @@ footer{background:#111;color:#fff;text-align:center;padding:30px 5%;margin-top:4
 .size-btn.active{background:#111;color:#fff}
 .size-btn:hover{opacity:0.8}
 @media(max-width:800px){.product-modal-v2{grid-template-columns:1fr}.p-left img{height:340px}}
-/* PRODUCT MODAL V2 - ORANGE LIKE PHOTO */
+/* PRODUCT CART COLOR */
 .product-modal-v2{max-width:900px;display:grid;grid-template-columns:1fr 380px;gap:0;padding:0;overflow:hidden;background:#fff;border-radius:20px}
 .product-modal-v2 .close{color:#111;z-index:5;background:#fff;width:28px;height:28px;display:grid;place-items:center;border-radius:50%}
 .p-left{background:#f1f1f1;display:grid;place-items:center;padding:20px}
