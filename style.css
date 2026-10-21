@@ -165,3 +165,8 @@ footer{background:#111;color:#fff;text-align:center;padding:30px 5%;margin-top:4
 .size-btn{background:#fff;border:1px solid #111;padding:6px 14px;font-weight:800;font-size:12px;cursor:pointer;min-width:42px;border-radius:6px}
 .size-btn.active{background:#111;color:#fff}
 @media(max-width:800px){.product-modal-v2{grid-template-columns:1fr}.p-left img{height:340px}}
+/* EYE PASSWORD TOGGLE */
+.password-field{position:relative;display:flex;align-items:center}
+.password-field input{flex:1;padding-right:45px}
+.eye-btn{position:absolute;right:10px;background:none;border:none;cursor:pointer;font-size:18px;line-height:1;top:50%;transform:translateY(-50%);margin-top:6px}
+.eye-btn:hover{opacity:0.7}
