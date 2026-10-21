@@ -1,14 +1,13 @@
-# EveryWear - main.py - FIXED v2 - All functions are now clickable
+# EveryWear - main.py - CART SAVED AFTER LOGOUT + EYE TOGGLE
 from js import document, localStorage, window, console
 from pyodide.ffi import create_proxy
 import json
 
-        # -- Added 10 Shirts to the products list with descriptions and categories -- 
 products = [
-    {"id": "1", "name": "WAKE UP Snail Tshirt", "price": 299, "img": "assets/shirt1.jpeg", "cat": "unisex", "desc": "Oversized fit with iconic snail graphic. Premium 100% cotton. Soft, breathable and perfect for everyday wear."},
-    {"id": "2", "name": "Ibiza 20/06 Memory Tshirt", "price": 199, "img": "assets/shirt2.jpeg", "cat": "men", "desc": "Vintage-inspired Ibiza graphic. Heavyweight cotton for a structured streetwear look."},
+    {"id": "1", "name": "CR7 Dedication Tshirt", "price": 299, "img": "assets/shirt1.jpeg", "cat": "unisex", "desc": "Oversized fit with iconic snail graphic. Premium 100% cotton. Soft, breathable and perfect for everyday wear."},
+    {"id": "2", "name": "IBIZA 20/06 MEMORY TSHIRT", "price": 199, "img": "assets/shirt2.jpeg", "cat": "men", "desc": "Vintage-inspired Ibiza graphic. Heavyweight cotton for a structured streetwear look."},
     {"id": "3", "name": "Keep God First Tshirt", "price": 359, "img": "assets/shirt3.jpeg", "cat": "streetwear", "desc": "Bold faith statement in puff print. Unisex brown tee, durable and comfortable."},
-    {"id": "4", "name": "CR7 Dedication Tshirt", "price": 399, "img": "assets/shirt4.jpeg", "cat": "men", "desc": "CR7 inspired dedication design. For the fans who never stop. Limited drop."},
+    {"id": "4", "name": "WAKE UP SNAIL TSHIRT", "price": 399, "img": "assets/shirt4.jpeg", "cat": "men", "desc": "CR7 inspired dedication design. For the fans who never stop. Limited drop."},
     {"id": "5", "name": "Sunset State Tshirt", "price": 299, "img": "assets/shirt5.png", "cat": "women", "desc": "Sunset graphic with desert vibes. Lightweight and perfect for summer."},
     {"id": "6", "name": "Warm Days", "price": 249, "img": "assets/shirt6.png", "cat": "unisex", "desc": "Minimal EveryWear logo tee. Your everyday essential."},
     {"id": "7", "name": "Slow Motion", "price": 329, "img": "assets/shirt7.png", "cat": "streetwear", "desc": "Washed brown streetwear tee. Vintage feel, modern fit."},
@@ -18,14 +17,12 @@ products = [
 ]
 
 selected_product = None
-proxies = [] # keep proxy alive
-
-def keep_proxy(func):
-    p = create_proxy(func)
-    proxies.append(p)
+selected_size = None
+PROXIES = []
+def keep(fn):
+    p = create_proxy(fn)
+    PROXIES.append(p)
     return p
-
-console.log("EveryWear PyScript Loading...")
 
 def get_users():
     data = localStorage.getItem("everywear_users")
@@ -36,27 +33,38 @@ def set_current(n):
     if n: localStorage.setItem("everywear_current", n)
     else: localStorage.removeItem("everywear_current")
 def get_cart():
-    data = localStorage.getItem("everywear_cart")
+    # A cart belongs only to the currently logged-in user.
+    user = get_current()
+    if not user:
+        return []
+
+    data = localStorage.getItem(f"everywear_cart_{user}")
     return json.loads(data) if data else []
-def save_cart(c): localStorage.setItem("everywear_cart", json.dumps(c))
+
+def save_cart(c):
+    # Keep the active user's cart in their own storage key.
+    user = get_current()
+    cart_data = json.dumps(c)
+    localStorage.setItem("everywear_cart", cart_data)
+    if user:
+        localStorage.setItem(f"everywear_cart_{user}", cart_data)
 
 def show_toast(msg):
     t = document.getElementById("toast")
     t.innerText = msg
     t.style.display = "block"
     def hide(): t.style.display = "none"
-    window.setTimeout(keep_proxy(hide), 2000)
+    window.setTimeout(keep(hide), 2000)
 
 def update_cart_count():
-    c = get_cart()
-    s = sum(i["qty"] for i in c)
+    s = sum(i["qty"] for i in get_cart())
     document.getElementById("cart-count").innerText = str(s)
 
 def update_nav():
     user = get_current()
-    disp = document.getElementById("user-display")
     lb = document.getElementById("open-login")
     lob = document.getElementById("logout-btn")
+    disp = document.getElementById("user-display")
     if user:
         disp.innerText = f"Hi, {user}"
         lb.style.display = "none"
@@ -71,26 +79,28 @@ def show_page(page):
     document.getElementById("landing-page").style.display = "none"
     document.getElementById("shop-page").style.display = "none"
     document.getElementById("about-page").style.display = "none"
-    target = document.getElementById(page)
-    if target: target.style.display = "block"
+    document.getElementById(page).style.display = "block"
     window.scrollTo(0, 0)
+window.show_page = keep(show_page)
 
-def safe_bind(id, event, func):
-    el = document.getElementById(id)
-    if el: el.addEventListener(event, keep_proxy(func))
-
-def handle_add_to_cart_from_data(name, price, img, pid):
+def handle_add_to_cart_from_data(name, price, img, pid, size="M"):
     if not get_current():
         show_toast("Please login to add items to your cart")
         document.getElementById("login-modal").classList.add("open")
         return False
+    if not size:
+        err = document.getElementById("size-error")
+        err.innerText = "Please select a size"
+        err.style.display = "block"
+        show_toast("Please select a size")
+        return False
     cart = get_cart()
-    found = next((i for i in cart if i["name"] == name), None)
+    found = next((i for i in cart if i["name"] == name and i.get("size") == size), None)
     if found: found["qty"] += 1
-    else: cart.append({"id": pid, "name": name, "price": price, "img": img, "qty": 1})
+    else: cart.append({"id": pid, "name": name, "price": price, "img": img, "qty": 1, "size": size})
     save_cart(cart)
     update_cart_count()
-    show_toast(name + " added to cart!")
+    show_toast(f"{name} ({size}) added to cart!")
     return True
 
 def render_cart():
@@ -99,20 +109,24 @@ def render_cart():
     con.innerHTML = ""
     total = 0
     if len(cart) == 0:
-        con.innerHTML = "<p style='text-align:center;color:#888;padding:20px'>Your cart is empty</p>"
+        con.innerHTML = "<p style=\'text-align:center;color:#888;padding:20px\'>Your cart is empty</p>"
     else:
         for item in cart:
             total += item["price"] * item["qty"]
+            size = item.get("size", "M")
             div = document.createElement("div")
             div.className = "cart-item"
-            div.innerHTML = f"<img src='{item['img']}'><div><b>{item['name']}</b><br>₱{item['price']} x {item['qty']}</div>"
+            div.innerHTML = f"<img src='{item['img']}'><div><b>{item['name']}</b><br>Size: {size} — ₱{item['price']} x {item['qty']}</div>"
             con.appendChild(div)
     document.getElementById("cart-total").innerText = f"Total: ₱{total:.2f}"
 
 def open_product(event):
-    global selected_product
-    card = event.currentTarget
-    pid = card.getAttribute("data-id")
+    global selected_product, selected_size
+    selected_size = None
+    for b in document.querySelectorAll(".size-btn"): b.className = "size-btn"
+    se = document.getElementById("size-error")
+    if se: se.style.display = "none"
+    pid = event.currentTarget.getAttribute("data-id")
     for p in products:
         if p["id"] == pid:
             selected_product = p
@@ -120,7 +134,7 @@ def open_product(event):
     if selected_product:
         document.getElementById("p-img").src = selected_product["img"]
         document.getElementById("p-cat").innerText = selected_product["cat"].upper()
-        document.getElementById("p-name").innerText = selected_product["name"]
+        document.getElementById("p-name").innerText = selected_product["name"].upper()
         document.getElementById("p-price").innerText = f"₱{selected_product['price']}"
         document.getElementById("p-desc").innerText = selected_product["desc"]
         document.getElementById("product-modal").classList.add("open")
@@ -142,7 +156,6 @@ def on_add_click(e):
         if p["id"] == pid:
             selected_product = p
             break
-    # open the same size modal like when you click the shirt
     if selected_product:
         document.getElementById("p-img").src = selected_product["img"]
         document.getElementById("p-cat").innerText = selected_product["cat"].upper()
@@ -150,6 +163,14 @@ def on_add_click(e):
         document.getElementById("p-price").innerText = f"₱{selected_product['price']}"
         document.getElementById("p-desc").innerText = selected_product["desc"]
         document.getElementById("product-modal").classList.add("open")
+
+def on_size_click(e):
+    global selected_size
+    b = e.currentTarget
+    for x in document.querySelectorAll(".size-btn"): x.className = "size-btn"
+    b.className = "size-btn active"
+    selected_size = b.getAttribute("data-size")
+    document.getElementById("size-error").style.display = "none"
 
 def on_filter_click(e):
     b = e.currentTarget
@@ -174,16 +195,13 @@ def render_products(filter_name="all"):
                 <button class="add-btn" data-id="{p['id']}" data-name="{p['name']}" data-price="{p['price']}" data-img="{p['img']}">Add to Cart</button>
             </div>
         """
-        card.addEventListener("click", keep_proxy(open_product))
+        card.addEventListener("click", keep(open_product))
         grid.appendChild(card)
     for btn in document.querySelectorAll(".add-btn"):
-        btn.addEventListener("click", keep_proxy(on_add_click))
+        btn.addEventListener("click", keep(on_add_click))
 
 def validate_email(e): return "@" in e and "." in e and len(e) > 5
-def validate_password(pw):
-    has_upper = any(c.isupper() for c in pw)
-    has_number = any(c.isdigit() for c in pw)
-    return len(pw) >= 8 and has_upper and has_number
+def validate_password(pw): return len(pw) >= 8 and any(c.isupper() for c in pw) and any(c.isdigit() for c in pw)
 
 def do_register(e):
     for el in document.querySelectorAll(".error"): el.style.display = "none"
@@ -207,7 +225,10 @@ def do_register(e):
     save_users(users)
     s.innerText="Account created! Please login now."; s.style.display="block"
     show_toast("Registration successful!")
-    window.setTimeout(keep_proxy(lambda: (document.getElementById("register-modal").classList.remove("open"), document.getElementById("login-modal").classList.add("open"))), 1200)
+    def go(): 
+        document.getElementById("register-modal").classList.remove("open")
+        document.getElementById("login-modal").classList.add("open")
+    window.setTimeout(keep(go), 1200)
 
 def do_login(e):
     for el in document.querySelectorAll(".error"): el.style.display = "none"
@@ -217,7 +238,11 @@ def do_login(e):
     if not p: el=document.getElementById("login-pass-error"); el.innerText="Password required"; el.style.display="block"; return
     found = next((x for x in get_users() if x["username"]==u and x["password"]==p), None)
     if found:
-        set_current(u); update_nav()
+        set_current(u)
+        # Load only this user's cart; never reuse another session's cart.
+        saved = localStorage.getItem(f"everywear_cart_{u}")
+        localStorage.setItem("everywear_cart", saved if saved else "[]")
+        update_nav()
         document.getElementById("login-modal").classList.remove("open")
         show_toast("Welcome, " + u + "!")
     else:
@@ -234,40 +259,117 @@ def to_login(e): document.getElementById("register-modal").classList.remove("ope
 def open_cart(e): render_cart(); document.getElementById("cart-modal").classList.add("open")
 def close_cart(e): document.getElementById("cart-modal").classList.remove("open")
 def close_product(e): document.getElementById("product-modal").classList.remove("open")
-def do_logout(e): set_current(None); localStorage.removeItem("everywear_cart"); update_nav(); show_toast("Logged out")
-def do_checkout(e): save_cart([]); update_cart_count(); render_cart(); show_toast("Order placed! Thank you for shopping at EveryWear")
+def close_checkout(e): document.getElementById("checkout-modal").classList.remove("open")
+def do_logout(e):
+    # Clear the active user's unpurchased cart when they log out.
+    user = get_current()
+    if user:
+        localStorage.removeItem(f"everywear_cart_{user}")
+
+    # Clear the session cart as well, so it cannot appear while logged out
+    # or leak into another account's session.
+    localStorage.setItem("everywear_cart", "[]")
+    set_current(None)
+
+    # Close shopping dialogs and refresh the cart badge to show zero items.
+    for modal_id in ("cart-modal", "checkout-modal", "product-modal"):
+        document.getElementById(modal_id).classList.remove("open")
+
+    update_nav()
+    render_cart()
+    show_toast("Logged out - your cart has been cleared.")
+def on_checkout(e):
+    cart = get_cart()
+    if len(cart)==0:
+        show_toast("Cart is empty")
+        return
+    document.getElementById("cart-modal").classList.remove("open")
+    document.getElementById("checkout-modal").classList.add("open")
+def confirm_order(e):
+    addr = document.getElementById("checkout-address").value.strip()
+    contact = document.getElementById("checkout-contact").value.strip()
+    for el in [document.getElementById("checkout-address-error"), document.getElementById("checkout-contact-error")]:
+        el.style.display = "none"
+    has_err = False
+    if not addr:
+        el=document.getElementById("checkout-address-error"); el.innerText="Delivery address is required"; el.style.display="block"; has_err=True
+    if not contact:
+        el=document.getElementById("checkout-contact-error"); el.innerText="Contact number is required"; el.style.display="block"; has_err=True
+    elif len(contact) < 11 or not contact.replace(" ","").replace("-","").isdigit():
+        el=document.getElementById("checkout-contact-error"); el.innerText="Enter a valid contact number"; el.style.display="block"; has_err=True
+    if has_err: return
+    save_cart([])
+    user = get_current()
+    if user:
+        localStorage.setItem(f"everywear_cart_{user}", json.dumps([]))
+    update_cart_count()
+    render_cart()
+    document.getElementById("checkout-modal").classList.remove("open")
+    show_toast(f"Order confirmed! Deliver to {addr}")
+    document.getElementById("checkout-address").value = ""
+    document.getElementById("checkout-contact").value = ""
+
 def p_add_cart(e):
-    if selected_product: handle_add_to_cart_from_data(selected_product["name"], float(selected_product["price"]), selected_product["img"], selected_product["id"])
+    if selected_product: 
+        if handle_add_to_cart_from_data(selected_product["name"], float(selected_product["price"]), selected_product["img"], selected_product["id"], selected_size):
+            document.getElementById("product-modal").classList.remove("open")
+
 def p_buy_now(e):
     if selected_product:
-        ok = handle_add_to_cart_from_data(selected_product["name"], float(selected_product["price"]), selected_product["img"], selected_product["id"])
+        ok = handle_add_to_cart_from_data(selected_product["name"], float(selected_product["price"]), selected_product["img"], selected_product["id"], selected_size)
         if ok:
             document.getElementById("product-modal").classList.remove("open")
             render_cart(); document.getElementById("cart-modal").classList.add("open")
 
-safe_bind("nav-home", "click", go_home)
-safe_bind("nav-shop", "click", go_shop)
-safe_bind("nav-about", "click", go_about)
-safe_bind("shop-now", "click", go_shop)
-safe_bind("open-login", "click", open_login)
-safe_bind("close-login", "click", close_login)
-safe_bind("close-register", "click", close_register)
-safe_bind("to-register", "click", to_register)
-safe_bind("to-login", "click", to_login)
-safe_bind("open-cart", "click", open_cart)
-safe_bind("close-cart", "click", close_cart)
-safe_bind("close-product", "click", close_product)
-safe_bind("logout-btn", "click", do_logout)
-safe_bind("checkout-btn", "click", do_checkout)
-safe_bind("login-btn", "click", do_login)
-safe_bind("register-btn", "click", do_register)
-safe_bind("p-add-cart", "click", p_add_cart)
-safe_bind("p-buy-now", "click", p_buy_now)
+# EYE TOGGLE
+def toggle_login_pass(e):
+    inp = document.getElementById("login-password")
+    btn = document.getElementById("toggle-login-pass")
+    if inp.type == "password":
+        inp.type = "text"
+        btn.innerText = "🙈"
+    else:
+        inp.type = "password"
+        btn.innerText = "👁️"
+
+def toggle_reg_pass(e):
+    inp = document.getElementById("reg-password")
+    btn = document.getElementById("toggle-reg-pass")
+    if inp.type == "password":
+        inp.type = "text"
+        btn.innerText = "🙈"
+    else:
+        inp.type = "password"
+        btn.innerText = "👁️"
+
+def toggle_reg_confirm(e):
+    inp = document.getElementById("reg-confirm")
+    btn = document.getElementById("toggle-reg-confirm")
+    if inp.type == "password":
+        inp.type = "text"
+        btn.innerText = "🙈"
+    else:
+        inp.type = "password"
+        btn.innerText = "👁️"
+
+# BIND ALL
+for id, fn in [("nav-home", go_home), ("nav-shop", go_shop), ("nav-about", go_about), ("shop-now", go_shop), ("open-login", open_login), ("close-login", close_login), ("close-register", close_register), ("to-register", to_register), ("to-login", to_login), ("open-cart", open_cart), ("close-cart", close_cart), ("close-product", close_product), ("close-checkout", close_checkout), ("logout-btn", do_logout), ("checkout-btn", on_checkout), ("confirm-order-btn", confirm_order), ("login-btn", do_login), ("register-btn", do_register), ("p-add-cart", p_add_cart), ("p-buy-now", p_buy_now), ("toggle-login-pass", toggle_login_pass), ("toggle-reg-pass", toggle_reg_pass), ("toggle-reg-confirm", toggle_reg_confirm)]:
+    el = document.getElementById(id)
+    if el: el.addEventListener("click", keep(fn))
 
 for btn in document.querySelectorAll(".filter-bar button"):
-    btn.addEventListener("click", keep_proxy(on_filter_click))
+    btn.addEventListener("click", keep(on_filter_click))
+
+for btn in document.querySelectorAll(".size-btn"):
+    btn.addEventListener("click", keep(on_size_click))
 
 render_products()
 update_nav()
 show_page("landing-page")
-console.log("EveryWear Loaded OK!")
+# restore cart for already logged in user
+user = get_current()
+if user:
+    saved = localStorage.getItem(f"everywear_cart_{user}")
+    if saved:
+        localStorage.setItem("everywear_cart", saved)
+        update_cart_count()
