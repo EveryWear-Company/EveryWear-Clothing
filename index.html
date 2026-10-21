@@ -11,12 +11,12 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav>
   <div class="logo-wrap">
     <img src="assets/logo.jpeg" alt="EveryWear Logo">
   </div>
-  <ul class="nav-links">
+  <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-navigation">☰</button>
+  <ul class="nav-links" id="primary-navigation">
     <li><a id="nav-home" onclick="showPageJS('landing-page')">HOME</a></li>
     <li><a id="nav-shop" onclick="showPageJS('shop-page')">SHOP</a></li>
     <li><a id="nav-about" onclick="showPageJS('about-page')">ABOUT</a></li>
@@ -29,7 +29,6 @@
   </div>
 </nav>
 
-<!-- LANDING PAGE WITH VIDEO ADS -->
 <section id="landing-page">
   <div class="hero">
     <div>
@@ -38,7 +37,7 @@
       <button class="cta" id="shop-now" onclick="showPageJS('shop-page')">SHOP NOW →</button>
     </div>
     <div class="hero-img">
-      <video autoplay muted loop playsinline controls poster="assets/shirt1.jpg">
+      <video autoplay muted loop playsinline controls poster="assets/shirt1.jpeg">
         <source src="assets/ads.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
@@ -46,7 +45,6 @@
   </div>
 </section>
 
-<!-- SHOP PAGE -->
 <section id="shop-page" style="display:none;">
   <div class="filter-bar">
     <button class="active" data-filter="all">All</button>
@@ -58,7 +56,6 @@
   <section class="products" id="product-grid"></section>
 </section>
 
-<!-- ABOUT PAGE -->
 <section id="about-page" style="display:none;">
   <div class="about-container">
     <h1>ABOUT EVERYWEAR</h1>
@@ -66,7 +63,7 @@
     <div class="about-grid">
       <div>
         <h3>Our Story</h3>
-        <p>EveryWear was born from a simple idea: clothing should be comfortable, stylish, and for everyone. We create minimal, timeless pieces that you can wear every single day.</p>
+        <p>EveryWear was born from a simple idea: clothing should be comfortable, stylish, and for everyone.</p>
         <h3>Our Mission</h3>
         <p>To provide high-quality, affordable streetwear that empowers self-expression. Designed in Manila, made for the world.</p>
       </div>
@@ -83,7 +80,7 @@
   </div>
 </section>
 
-<!-- PRODUCT DETAIL PAGE - ADDING WHAT SIZE -->
+<!-- PRODUCT DETAIL PAGE -->
 <div class="modal-bg" id="product-modal">
   <div class="modal product-modal-v2">
     <span class="close" id="close-product">&times;</span>
@@ -91,12 +88,12 @@
       <img id="p-img" src="" alt="">
     </div>
     <div class="p-right">
-      <p id="p-cat" style="font-size:11px;letter-spacing:1px;color:#888"></p>
+      <p id="p-cat" style="font-size:11px;letter-spacing:1px;color:#111;opacity:0.7"></p>
       <h2 id="p-name" style="text-align:left;line-height:1.1"></h2>
-      <p id="p-price" style="font-weight:900;font-size:20px;margin:8px 0 2px"></p>
-      <p style="font-size:11px;color:#888">Shipping calculated at checkout.</p>
+      <p id="p-price" style="font-weight:900;font-size:22px;margin:8px 0 2px"></p>
+      <p style="font-size:11px;color:#111">Shipping calculated at checkout.</p>
       
-      <p style="font-weight:900;margin-top:16px;letter-spacing:1px">SIZE</p>
+      <p style="font-weight:900;margin-top:16px;letter-spacing:1px;font-size:13px">SIZE</p>
       <div class="size-options" id="size-options">
         <button class="size-btn" data-size="S">S</button>
         <button class="size-btn" data-size="M">M</button>
@@ -105,29 +102,29 @@
         <button class="size-btn" data-size="2XL">2XL</button>
         <button class="size-btn" data-size="3XL">3XL</button>
       </div>
-      <p style="font-size:11px;margin:6px 0;color:#111;text-decoration:underline;cursor:pointer">◧ Size Chart</p>
-      <p class="error" id="size-error" style="margin:4px 0"></p>
+      <p style="font-size:11px;margin:6px 0;text-decoration:underline;cursor:pointer">⊡ Size Chart</p>
+      <p class="error" id="size-error" style="display:none;color:#fff;background:#111;padding:4px 8px;border-radius:6px"></p>
       
       <button class="main" id="p-add-cart" style="background:#7c3aed">ADD TO CART</button>
       <button class="main" id="p-buy-now" style="background:#fff;color:#111;border:1px solid #111;margin-top:10px">Buy Now</button>
 
       <details open style="margin-top:18px">
-        <summary style="font-weight:800;font-size:13px;cursor:pointer">PRODUCT INFORMATION</summary>
-        <p id="p-desc" style="color:#555;font-size:13px;line-height:1.6;margin-top:8px"></p>
+        <summary style="font-weight:800;font-size:12px;cursor:pointer">PRODUCT INFORMATION</summary>
+        <p id="p-desc" style="color:#111;font-size:12px;line-height:1.6;margin-top:8px;opacity:0.9"></p>
       </details>
       <details style="margin-top:12px">
-        <summary style="font-weight:800;font-size:13px;cursor:pointer">PRODUCT DETAILS</summary>
-        <ul style="font-size:13px;color:#555;margin-top:8px;line-height:1.8;list-style:none">
-          <li>✓ 100% Cotton</li>
-          <li>✓ Classic fit</li>
-          <li>✓ Crew neck with rib collar</li>
-          <li>✓ Taped neck and shoulders</li>
-          <li>✓ Screenprint</li>
+        <summary style="font-weight:800;font-size:12px;cursor:pointer">PRODUCT DETAILS</summary>
+        <ul style="font-size:12px;color:#111;margin-top:8px;line-height:1.8;list-style:none;opacity:0.9">
+          <li>• 100% Cotton</li>
+          <li>• Classic fit</li>
+          <li>• Crew neck with rib collar</li>
+          <li>• Taped neck and shoulders</li>
+          <li>• Screenprint</li>
         </ul>
       </details>
       <details style="margin-top:12px">
-        <summary style="font-weight:800;font-size:13px;cursor:pointer">MATERIALS & CARE</summary>
-        <ul style="font-size:13px;color:#555;margin-top:8px;line-height:1.8;list-style:none">
+        <summary style="font-weight:800;font-size:12px;cursor:pointer">MATERIALS & CARE</summary>
+        <ul style="font-size:12px;color:#111;margin-top:8px;line-height:1.8;list-style:none;opacity:0.9">
           <li>Machine Wash Cold</li>
           <li>Do Not Bleach</li>
           <li>Tumble Dry Low</li>
@@ -146,11 +143,14 @@
     <p style="text-align:center;font-size:13px;color:#666">Login to add items to your cart</p>
     <input type="text" id="login-username" placeholder="Username">
     <p class="error" id="login-user-error"></p>
-    <input type="password" id="login-password" placeholder="Password">
+    <div class="password-field">
+      <input type="password" id="login-password" placeholder="Password">
+      <button type="button" class="eye-btn" id="toggle-login-pass">👁️</button>
+    </div>
     <p class="error" id="login-pass-error"></p>
     <p class="error" id="login-general-error" style="text-align:center;font-weight:700"></p>
     <button class="main" id="login-btn">LOGIN</button>
-    <div class="switch">Don't have an account? <button id="to-register">Create Account</button></div>
+    <div class="switch">Don\'t have an account? <button id="to-register">Create Account</button></div>
   </div>
 </div>
 
@@ -165,9 +165,15 @@
     <p class="error" id="reg-name-error"></p>
     <input type="email" id="reg-email" placeholder="Email Address">
     <p class="error" id="reg-email-error"></p>
-    <input type="password" id="reg-password" placeholder="Password (8+ chars, 1 Uppercase, 1 Number)">
+    <div class="password-field">
+      <input type="password" id="reg-password" placeholder="Password (8+ chars, 1 Uppercase, 1 Number)">
+      <button type="button" class="eye-btn" id="toggle-reg-pass">👁️</button>
+    </div>
     <p class="error" id="reg-pass-error"></p>
-    <input type="password" id="reg-confirm" placeholder="Confirm Password">
+    <div class="password-field">
+      <input type="password" id="reg-confirm" placeholder="Confirm Password">
+      <button type="button" class="eye-btn" id="toggle-reg-confirm">👁️</button>
+    </div>
     <p class="error" id="reg-confirm-error"></p>
     <p class="success" id="reg-success"></p>
     <button class="main" id="register-btn">REGISTER</button>
@@ -186,6 +192,20 @@
   </div>
 </div>
 
+<!-- ADDRESS BILLING  -->
+<div class="modal-bg" id="checkout-modal">
+  <div class="modal">
+    <span class="close" id="close-checkout">&times;</span>
+    <h2>DELIVERY DETAILS</h2>
+    <p style="text-align:center;font-size:12px;color:#666;margin-bottom:10px">Required to deliver your items</p>
+    <input type="text" id="checkout-address" placeholder="Delivery Address *">
+    <p class="error" id="checkout-address-error"></p>
+    <input type="text" id="checkout-contact" placeholder="Contact Number *">
+    <p class="error" id="checkout-contact-error"></p>
+    <button class="main" id="confirm-order-btn">CONFIRM ORDER</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <footer>
@@ -193,17 +213,21 @@
   <p>© 2025 EveryWear Clothing. All Rights Reserved. Wear It Every Day.</p>
 </footer>
 
-<!-- BACKUP NAVIGATION - Works even if PyScript fails -->
 <script>
 function showPageJS(page){
   document.getElementById('landing-page').style.display='none';
   document.getElementById('shop-page').style.display='none';
   document.getElementById('about-page').style.display='none';
   document.getElementById(page).style.display='block';
+  document.querySelector('nav').classList.remove('menu-open');
+  document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
   window.scrollTo(0,0);
 }
+document.getElementById('menu-toggle').addEventListener('click', function(){
+  const isOpen = document.querySelector('nav').classList.toggle('menu-open');
+  this.setAttribute('aria-expanded', String(isOpen));
+});
 </script>
-
 <script type="py" src="main.py"></script>
 </body>
 </html>
