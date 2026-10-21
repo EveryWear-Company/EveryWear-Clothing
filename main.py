@@ -1,260 +1,346 @@
-# EveryWear Clothing - main.py
-# Handles: Register / Login / Add to Cart / Cart / Filters
-# Uses browser localStorage for accounts
-
+# EveryWear - main.py - FIXED
 from js import document, localStorage, window
 import json
 
-# --- 1. PRODUCT DATA (Added 8 shirts) ---
+# 4 Real shirts from assets/ + 4 online placeholders
 products = [
-    {"id": "1", "name": "WAKE UP Snail Tee", "price": 29.99, "img": "shirt1.jpeg", "cat": "graphic"},
-    {"id": "2", "name": "Ibiza 20/06 Memory Tee", "price": 32.99, "img": "shirt2.jpeg", "cat": "graphic"},
-    {"id": "3", "name": "Keep God First Tee", "price": 34.99, "img": "shirt3.jpeg", "cat": "street"},
-    {"id": "4", "name": "CR7 Dedication Tee", "price": 35.99, "img": "shirt4.jpeg", "cat": "street"},
-    {"id": "5", "name": "WAKE UP Snail Tee - Oversized", "price": 31.99, "img": "shirt5.png", "cat": "unisex"},
-    {"id": "6", "name": "Ibiza Tee - Cream Edition", "price": 32.99, "img": "shirt6.png", "cat": "unisex"},
-    {"id": "7", "name": "Keep God First - Brown", "price": 34.99, "img": "shirt7.png", "cat": "unisex"},
-    {"id": "8", "name": "CR7 Legend Tee", "price": 36.99, "img": "shirt8.png", "cat": "graphic"},
+    {"id": "1", "name": "WAKE UP Snail Tee", "price": 299, "img": "assets/shirt1.jpeg", "cat": "unisex", "desc": "Oversized fit with iconic snail graphic. Premium 100% cotton. Soft, breathable and perfect for everyday wear."},
+    {"id": "2", "name": "Ibiza 20/06 Memory Tee", "price": 199, "img": "assets/shirt2.jpeg", "cat": "men", "desc": "Vintage-inspired Ibiza graphic. Heavyweight cotton for a structured streetwear look."},
+    {"id": "3", "name": "Keep God First Tee", "price": 359, "img": "assets/shirt3.jpeg", "cat": "streetwear", "desc": "Bold faith statement in puff print. Unisex brown tee, durable and comfortable."},
+    {"id": "4", "name": "CR7 Dedication Tee", "price": 399, "img": "assets/shirt4.jpeg", "cat": "men", "desc": "CR7 inspired dedication design. For the fans who never stop. Limited drop."},
+    {"id": "5", "name": "Sunset State Tee", "price": 299, "img": "assets/shirt5.png", "cat": "women", "desc": "Sunset graphic with desert vibes. Lightweight and perfect for summer."},
+    {"id": "6", "name": "Classic EveryWear Tee", "price": 249, "img": "assets/shirt6.png", "cat": "unisex", "desc": "Minimal EveryWear logo tee. Your everyday essential."},
+    {"id": "7", "name": "Washed Brown Tee", "price": 329, "img": "assets/shirt7.png", "cat": "streetwear", "desc": "Washed brown streetwear tee. Vintage feel, modern fit."},
+    {"id": "8", "name": "Graphic White Tee", "price": 279, "img": "assets/shirt8.png", "cat": "women", "desc": "Clean white graphic tee. Minimal design for maximum style."},
 ]
 
-# --- 2. STORAGE HELPERS ---
+selected_product = None
+
+# --- STORAGE ---
 def get_users():
     data = localStorage.getItem("everywear_users")
-    return json.loads(data) if data else []
+    if data is None:
+        return []
+    return json.loads(data)
 
-def save_users(users):
-    localStorage.setItem("everywear_users", json.dumps(users))
+def save_users(u):
+    localStorage.setItem("everywear_users", json.dumps(u))
 
 def get_current():
     return localStorage.getItem("everywear_current")
 
-def set_current(username):
-    if username:
-        localStorage.setItem("everywear_current", username)
+def set_current(n):
+    if n:
+        localStorage.setItem("everywear_current", n)
     else:
         localStorage.removeItem("everywear_current")
 
 def get_cart():
     data = localStorage.getItem("everywear_cart")
-    return json.loads(data) if data else []
+    if data is None:
+        return []
+    return json.loads(data)
 
-def save_cart(cart):
-    localStorage.setItem("everywear_cart", json.dumps(cart))
+def save_cart(c):
+    localStorage.setItem("everywear_cart", json.dumps(c))
 
-# --- 3. UI HELPERS ---
+# --- HELPERS ---
 def show_toast(msg):
     t = document.getElementById("toast")
     t.innerText = msg
     t.style.display = "block"
-    window.setTimeout(lambda: setattr(t.style, "display", "none"), 2000)
+    def hide():
+        t.style.display = "none"
+    window.setTimeout(hide, 2000)
+
+def update_cart_count():
+    c = get_cart()
+    s = 0
+    for i in c:
+        s += i["qty"]
+    document.getElementById("cart-count").innerText = str(s)
 
 def update_nav():
     user = get_current()
-    display = document.getElementById("user-display")
-    login_btn = document.getElementById("open-login")
-    logout_btn = document.getElementById("logout-btn")
+    disp = document.getElementById("user-display")
+    lb = document.getElementById("open-login")
+    lob = document.getElementById("logout-btn")
     if user:
-        display.innerText = f"Hi, {user} 👋"
-        login_btn.style.display = "none"
-        logout_btn.style.display = "block"
+        disp.innerText = f"Hi, {user}"
+        lb.style.display = "none"
+        lob.style.display = "block"
     else:
-        display.innerText = ""
-        login_btn.style.display = "block"
-        logout_btn.style.display = "none"
+        disp.innerText = ""
+        lb.style.display = "block"
+        lob.style.display = "none"
     update_cart_count()
 
-def update_cart_count():
-    cart = get_cart()
-    count = sum(item["qty"] for item in cart)
-    document.getElementById("cart-count").innerText = str(count)
+def show_page(page):
+    document.getElementById("landing-page").style.display = "none"
+    document.getElementById("shop-page").style.display = "none"
+    document.getElementById("about-page").style.display = "none"
+    document.getElementById(page).style.display = "block"
 
-# --- 4. RENDER PRODUCTS ---
-def render_products(filter="all"):
-    grid = document.getElementById("product-grid")
-    grid.innerHTML = ""
-    for p in products:
-        if filter != "all" and p["cat"] != filter:
-            continue
-        card = document.createElement("div")
-        card.className = "card"
-        card.innerHTML = f"""
-            <img src="{p['img']}" alt="{p['name']}">
-            <div class="card-body">
-                <p style="font-size:11px;letter-spacing:1px;color:#888">{p['cat'].upper()}</p>
-                <h3>{p['name']}</h3>
-                <p class="price">${p['price']}</p>
-                <button class="add-btn" data-id="{p['id']}" data-name="{p['name']}" data-price="{p['price']}" data-img="{p['img']}">Add to Cart</button>
-            </div>
-        """
-        grid.appendChild(card)
+def safe_bind(id, event, func):
+    el = document.getElementById(id)
+    if el is not None:
+        el.addEventListener(event, func)
 
-    for btn in document.querySelectorAll(".add-btn"):
-        btn.addEventListener("click", lambda e, b=btn: handle_add_to_cart(b))
-
-def handle_add_to_cart(btn):
-    # REQUIREMENT: If not logged in -> redirect to login
+# --- CART LOGIC ---
+def handle_add_to_cart_from_data(name, price, img, pid):
     if not get_current():
         show_toast("Please login to add items to your cart")
         document.getElementById("login-modal").classList.add("open")
-        return
-
-    name = btn.getAttribute("data-name")
-    price = float(btn.getAttribute("data-price"))
-    img = btn.getAttribute("data-img")
-    pid = btn.getAttribute("data-id")
-
+        return False
     cart = get_cart()
-    found = next((i for i in cart if i["name"] == name), None)
+    found = None
+    for item in cart:
+        if item["name"] == name:
+            found = item
+            break
     if found:
         found["qty"] += 1
     else:
         cart.append({"id": pid, "name": name, "price": price, "img": img, "qty": 1})
-
     save_cart(cart)
     update_cart_count()
-    show_toast(f"{name} added to cart!")
+    show_toast(name + " added to cart!")
+    return True
 
 def render_cart():
     cart = get_cart()
-    container = document.getElementById("cart-items")
-    container.innerHTML = ""
+    con = document.getElementById("cart-items")
+    con.innerHTML = ""
     total = 0
-    if not cart:
-        container.innerHTML = "<p style='text-align:center;color:#888;padding:20px'>Your cart is empty</p>"
-    for item in cart:
-        total += item["price"] * item["qty"]
-        div = document.createElement("div")
-        div.className = "cart-item"
-        div.innerHTML = f"<img src='{item['img']}'><div><b>{item['name']}</b><br>${item['price']:.2f} x {item['qty']}</div>"
-        container.appendChild(div)
-    document.getElementById("cart-total").innerText = f"Total: ${total:.2f}"
+    if len(cart) == 0:
+        con.innerHTML = "<p style='text-align:center;color:#888;padding:20px'>Your cart is empty</p>"
+    else:
+        for item in cart:
+            total += item["price"] * item["qty"]
+            div = document.createElement("div")
+            div.className = "cart-item"
+            div.innerHTML = f"<img src='{item['img']}'><div><b>{item['name']}</b><br>₱{item['price']} x {item['qty']}</div>"
+            con.appendChild(div)
+    document.getElementById("cart-total").innerText = f"Total: ₱{total:.2f}"
 
-# --- 5. VALIDATION ---
-def validate_email(email):
-    return "@" in email and "." in email and len(email) > 5
+# --- PRODUCTS ---
+def open_product(event):
+    global selected_product
+    card = event.currentTarget
+    pid = card.getAttribute("data-id")
+    for p in products:
+        if p["id"] == pid:
+            selected_product = p
+            break
+    if selected_product is not None:
+        document.getElementById("p-img").src = selected_product["img"]
+        document.getElementById("p-cat").innerText = selected_product["cat"].upper()
+        document.getElementById("p-name").innerText = selected_product["name"]
+        document.getElementById("p-price").innerText = f"₱{selected_product['price']}"
+        document.getElementById("p-desc").innerText = selected_product["desc"]
+        document.getElementById("product-modal").classList.add("open")
+
+def render_products(filter_name="all"):
+    grid = document.getElementById("product-grid")
+    grid.innerHTML = ""
+    for p in products:
+        if filter_name != "all" and p["cat"] != filter_name:
+            continue
+        card = document.createElement("div")
+        card.className = "card"
+        card.setAttribute("data-id", p["id"])
+        card.innerHTML = f"""
+            <img src="{p['img']}" alt="{p['name']}" onerror="this.src='https://via.placeholder.com/500?text=EveryWear'">
+            <div class="card-body">
+                <p style="font-size:11px;letter-spacing:1px;color:#888">{p['cat'].upper()}</p>
+                <h3>{p['name']}</h3>
+                <p class="price">₱{p['price']}</p>
+                <button class="add-btn" data-id="{p['id']}" data-name="{p['name']}" data-price="{p['price']}" data-img="{p['img']}">Add to Cart</button>
+            </div>
+        """
+        card.addEventListener("click", open_product)
+        grid.appendChild(card)
+    
+    for btn in document.querySelectorAll(".add-btn"):
+        def make_handler(b):
+            def h(e):
+                e.stopPropagation()
+                handle_add_to_cart_from_data(b.getAttribute("data-name"), float(b.getAttribute("data-price")), b.getAttribute("data-img"), b.getAttribute("data-id"))
+            return h
+        btn.addEventListener("click", make_handler(btn))
+
+# --- VALIDATION ---
+def validate_email(e):
+    return "@" in e and "." in e and len(e) > 5
 
 def validate_password(pw):
-    # At least 8 chars, 1 uppercase, 1 number
-    has_upper = any(c.isupper() for c in pw)
-    has_number = any(c.isdigit() for c in pw)
+    has_upper = False
+    has_number = False
+    for c in pw:
+        if c.isupper():
+            has_upper = True
+        if c.isdigit():
+            has_number = True
     return len(pw) >= 8 and has_upper and has_number
 
-# --- 6. REGISTER ---
+# --- AUTH ---
 def do_register(e):
     for el in document.querySelectorAll(".error"):
         el.style.display = "none"
-    success = document.getElementById("reg-success")
-    success.style.display = "none"
-
-    username = document.getElementById("reg-username").value.strip()
-    fullname = document.getElementById("reg-fullname").value.strip()
-    email = document.getElementById("reg-email").value.strip()
-    password = document.getElementById("reg-password").value
-    confirm = document.getElementById("reg-confirm").value
-
-    has_error = False
+    s = document.getElementById("reg-success")
+    s.style.display = "none"
+    u = document.getElementById("reg-username").value.strip()
+    fn = document.getElementById("reg-fullname").value.strip()
+    em = document.getElementById("reg-email").value.strip()
+    pw = document.getElementById("reg-password").value
+    cf = document.getElementById("reg-confirm").value
+    err = False
     users = get_users()
-
-    if len(username) < 3:
+    if len(u) < 3:
         el = document.getElementById("reg-user-error")
         el.innerText = "Username must be at least 3 characters"
         el.style.display = "block"
-        has_error = True
-    elif any(u["username"] == username for u in users):
-        el = document.getElementById("reg-user-error")
-        el.innerText = "Username already taken"
-        el.style.display = "block"
-        has_error = True
-
-    if not fullname:
+        err = True
+    else:
+        for x in users:
+            if x["username"] == u:
+                el = document.getElementById("reg-user-error")
+                el.innerText = "Username already taken"
+                el.style.display = "block"
+                err = True
+                break
+    if not fn:
         el = document.getElementById("reg-name-error")
         el.innerText = "Full name is required"
         el.style.display = "block"
-        has_error = True
-
-    if not validate_email(email):
+        err = True
+    if not validate_email(em):
         el = document.getElementById("reg-email-error")
-        el.innerText = "Enter a valid email address"
+        el.innerText = "Enter a valid email"
         el.style.display = "block"
-        has_error = True
-
-    if not validate_password(password):
+        err = True
+    if not validate_password(pw):
         el = document.getElementById("reg-pass-error")
         el.innerText = "Password must be 8+ chars, 1 uppercase & 1 number"
         el.style.display = "block"
-        has_error = True
-
-    if password != confirm:
+        err = True
+    if pw != cf:
         el = document.getElementById("reg-confirm-error")
         el.innerText = "Passwords do not match"
         el.style.display = "block"
-        has_error = True
-
-    if has_error:
+        err = True
+    if err:
         return
-
-    users.append({"username": username, "fullname": fullname, "email": email, "password": password})
+    users.append({"username": u, "fullname": fn, "email": em, "password": pw})
     save_users(users)
-    success.innerText = "Account created! Please login now."
-    success.style.display = "block"
+    s.innerText = "Account created! Please login now."
+    s.style.display = "block"
     show_toast("Registration successful!")
-    window.setTimeout(lambda: (document.getElementById("register-modal").classList.remove("open"), document.getElementById("login-modal").classList.add("open")), 1200)
+    def go():
+        document.getElementById("register-modal").classList.remove("open")
+        document.getElementById("login-modal").classList.add("open")
+    window.setTimeout(go, 1200)
 
-# --- 7. LOGIN ---
 def do_login(e):
     for el in document.querySelectorAll(".error"):
         el.style.display = "none"
-
-    username = document.getElementById("login-username").value.strip()
-    password = document.getElementById("login-password").value
-    general = document.getElementById("login-general-error")
-
-    if not username:
+    u = document.getElementById("login-username").value.strip()
+    p = document.getElementById("login-password").value
+    if not u:
         el = document.getElementById("login-user-error")
         el.innerText = "Username required"
         el.style.display = "block"
         return
-    if not password:
+    if not p:
         el = document.getElementById("login-pass-error")
         el.innerText = "Password required"
         el.style.display = "block"
         return
-
-    users = get_users()
-    user = next((u for u in users if u["username"] == username and u["password"] == password), None)
-
-    if user:
-        set_current(username)
+    found = None
+    for x in get_users():
+        if x["username"] == u and x["password"] == p:
+            found = x
+            break
+    if found is not None:
+        set_current(u)
         update_nav()
         document.getElementById("login-modal").classList.remove("open")
-        show_toast(f"Welcome, {username}!")
+        show_toast("Welcome, " + u + "!")
     else:
-        general.innerText = "Invalid username or password"
-        general.style.display = "block"
-        general.style.textAlign = "center"
-        general.style.fontWeight = "700"
+        g = document.getElementById("login-general-error")
+        g.innerText = "Invalid username or password"
+        g.style.display = "block"
 
-# --- 8. EVENTS ---
-document.getElementById("register-btn").addEventListener("click", do_register)
-document.getElementById("login-btn").addEventListener("click", do_login)
+# --- BIND ALL EVENTS SAFELY ---
+def go_home(e): show_page("landing-page")
+def go_shop(e): show_page("shop-page")
+def go_about(e): show_page("about-page")
+def shop_now_go(e): show_page("shop-page")
+def open_login(e): document.getElementById("login-modal").classList.add("open")
+def close_login(e): document.getElementById("login-modal").classList.remove("open")
+def close_register(e): document.getElementById("register-modal").classList.remove("open")
+def to_register(e):
+    document.getElementById("login-modal").classList.remove("open")
+    document.getElementById("register-modal").classList.add("open")
+def to_login(e):
+    document.getElementById("register-modal").classList.remove("open")
+    document.getElementById("login-modal").classList.add("open")
+def open_cart(e):
+    render_cart()
+    document.getElementById("cart-modal").classList.add("open")
+def close_cart(e): document.getElementById("cart-modal").classList.remove("open")
+def close_product(e): document.getElementById("product-modal").classList.remove("open")
+def do_logout(e):
+    set_current(None)
+    localStorage.removeItem("everywear_cart")
+    update_nav()
+    show_toast("Logged out")
+def do_checkout(e):
+    save_cart([])
+    update_cart_count()
+    render_cart()
+    show_toast("Order placed! Thank you for shopping at EveryWear")
+def p_add_cart(e):
+    if selected_product is not None:
+        handle_add_to_cart_from_data(selected_product["name"], float(selected_product["price"]), selected_product["img"], selected_product["id"])
+def p_buy_now(e):
+    if selected_product is not None:
+        ok = handle_add_to_cart_from_data(selected_product["name"], float(selected_product["price"]), selected_product["img"], selected_product["id"])
+        if ok:
+            document.getElementById("product-modal").classList.remove("open")
+            render_cart()
+            document.getElementById("cart-modal").classList.add("open")
 
-document.getElementById("open-login").addEventListener("click", lambda e: document.getElementById("login-modal").classList.add("open"))
-document.getElementById("close-login").addEventListener("click", lambda e: document.getElementById("login-modal").classList.remove("open"))
-document.getElementById("close-register").addEventListener("click", lambda e: document.getElementById("register-modal").classList.remove("open"))
-
-# Switch between Login <-> Register (Create Account button)
-document.getElementById("to-register").addEventListener("click", lambda e: (document.getElementById("login-modal").classList.remove("open"), document.getElementById("register-modal").classList.add("open")))
-document.getElementById("to-login").addEventListener("click", lambda e: (document.getElementById("register-modal").classList.remove("open"), document.getElementById("login-modal").classList.add("open")))
-
-document.getElementById("open-cart").addEventListener("click", lambda e: (render_cart(), document.getElementById("cart-modal").classList.add("open")))
-document.getElementById("close-cart").addEventListener("click", lambda e: document.getElementById("cart-modal").classList.remove("open"))
-document.getElementById("logout-btn").addEventListener("click", lambda e: (set_current(None), localStorage.removeItem("everywear_cart"), update_nav(), show_toast("Logged out")))
-document.getElementById("checkout-btn").addEventListener("click", lambda e: (save_cart([]), update_cart_count(), render_cart(), show_toast("Order placed! Thank you for shopping at EveryWear")))
-document.getElementById("shop-now").addEventListener("click", lambda e: document.getElementById("product-grid").scrollIntoView({"behavior": "smooth"}))
+safe_bind("nav-home", "click", go_home)
+safe_bind("nav-shop", "click", go_shop)
+safe_bind("nav-about", "click", go_about)
+safe_bind("shop-now", "click", shop_now_go)
+safe_bind("open-login", "click", open_login)
+safe_bind("close-login", "click", close_login)
+safe_bind("close-register", "click", close_register)
+safe_bind("to-register", "click", to_register)
+safe_bind("to-login", "click", to_login)
+safe_bind("open-cart", "click", open_cart)
+safe_bind("close-cart", "click", close_cart)
+safe_bind("close-product", "click", close_product)
+safe_bind("logout-btn", "click", do_logout)
+safe_bind("checkout-btn", "click", do_checkout)
+safe_bind("login-btn", "click", do_login)
+safe_bind("register-btn", "click", do_register)
+safe_bind("p-add-cart", "click", p_add_cart)
+safe_bind("p-buy-now", "click", p_buy_now)
 
 for btn in document.querySelectorAll(".filter-bar button"):
-    btn.addEventListener("click", lambda e, b=btn: ( [setattr(x, "className", "") for x in document.querySelectorAll(".filter-bar button")], setattr(b, "className", "active"), render_products(b.getAttribute("data-filter")) ))
+    def make_filter(b):
+        def h(e):
+            for x in document.querySelectorAll(".filter-bar button"):
+                x.className = ""
+            b.className = "active"
+            render_products(b.getAttribute("data-filter"))
+        return h
+    btn.addEventListener("click", make_filter(btn))
 
-# --- 9. INIT ---
+# INIT
 render_products()
 update_nav()
+show_page("landing-page")
