@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: \'Inter\', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 body {
@@ -111,7 +111,7 @@ nav {
 }
 
 .hero h1 {
-  font-family: \'Bebas Neue\', sans-serif;
+  font-family: 'Bebas Neue', sans-serif;
   font-size: 78px;
   line-height: 0.9;
   letter-spacing: 1px;
@@ -257,7 +257,7 @@ nav {
 }
 
 .modal h2 {
-  font-family: \'Bebas Neue\', sans-serif;
+  font-family: 'Bebas Neue', sans-serif;
   font-size: 32px;
   text-align: center;
 }
