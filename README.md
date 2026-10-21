@@ -11,8 +11,8 @@ Features
 - Checkout demonstration that clears the cart and displays a confirmation message.
 - Responsive styling for desktop, tablet, and mobile screens.
 Technologies Used
-- HTML5
-- CSS3
+- HTML
+- CSS
 - Python running in the browser through PyScript
 - JavaScript for the navigation fallback
 - Browser localStorage for demo account and cart data
@@ -71,8 +71,8 @@ Current Limitations and Security Notes
 - The site uses PyScript from an external CDN, so its Python code runs in the browser rather than on a private backend server.
 For a more secure, multi-user version, use a backend such as Python Flask with a database such as SQLite (or another appropriate database). Store passwords using a strong password-hashing method, manage login sessions on the server, and validate registration and checkout on the backend. Use a payment provider rather than collecting payment details directly.
 CONTRIBUTORS:
-TUMABANG, RICARDO
-PASUMALA,KURBY
-CATAMISAN,VALERIE
-AMPER,ALJIE
-REOYAN,AISHWARYA
+#TUMABANG, RICARDO
+#PASUMALA,KURBY
+#CATAMISAN,VALERIE
+#AMPER,ALJIE
+#REOYAN,AISHWARYA
