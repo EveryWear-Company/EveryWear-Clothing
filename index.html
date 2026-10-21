@@ -213,21 +213,6 @@
   <p>© 2025 EveryWear Clothing. All Rights Reserved. Wear It Every Day.</p>
 </footer>
 
-<script>
-function showPageJS(page){
-  document.getElementById('landing-page').style.display='none';
-  document.getElementById('shop-page').style.display='none';
-  document.getElementById('about-page').style.display='none';
-  document.getElementById(page).style.display='block';
-  document.querySelector('nav').classList.remove('menu-open');
-  document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
-  window.scrollTo(0,0);
-}
-document.getElementById('menu-toggle').addEventListener('click', function(){
-  const isOpen = document.querySelector('nav').classList.toggle('menu-open');
-  this.setAttribute('aria-expanded', String(isOpen));
-});
-</script>
 <script type="py" src="main.py"></script>
 </body>
 </html>
