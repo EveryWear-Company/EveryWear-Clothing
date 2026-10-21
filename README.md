@@ -1,4 +1,3 @@
-#EveryWear
 EveryWear Clothing is a simple clothing-shop website for browsing everyday T-shirts and streetwear. The site includes a home page with a promotional video, a product shop with category filters, product details and size choices, account registration and login, a shopping cart, and an About page.
 Project note: This version is a front-end learning/demo project. Account information and the cart are stored in the visitor's browser using localStorage; there is no server-side database, payment gateway, or real order processing in the current implementation.
 
