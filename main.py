@@ -1,5 +1,6 @@
 # EveryWear - main.py - CART SAVED AFTER LOGOUT + EYE TOGGLE
-from js import document, localStorage, window, console
+import asyncio
+from js import document, localStorage
 from pyodide.ffi import create_proxy
 import json
 
@@ -53,8 +54,10 @@ def show_toast(msg):
     t = document.getElementById("toast")
     t.innerText = msg
     t.style.display = "block"
-    def hide(): t.style.display = "none"
-    window.setTimeout(keep(hide), 2000)
+    async def hide_later():
+        await asyncio.sleep(2)
+        t.style.display = "none"
+    asyncio.create_task(hide_later())
 
 def update_cart_count():
     s = sum(i["qty"] for i in get_cart())
@@ -80,8 +83,8 @@ def show_page(page):
     document.getElementById("shop-page").style.display = "none"
     document.getElementById("about-page").style.display = "none"
     document.getElementById(page).style.display = "block"
-    window.scrollTo(0, 0)
-window.show_page = keep(show_page)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
 
 def handle_add_to_cart_from_data(name, price, img, pid, size="M"):
     if not get_current():
@@ -187,7 +190,7 @@ def render_products(filter_name="all"):
         card.className = "card"
         card.setAttribute("data-id", p["id"])
         card.innerHTML = f"""
-            <img src="{p['img']}" alt="{p['name']}" onerror="this.src='https://via.placeholder.com/500?text=EveryWear'">
+            <img src="{p['img']}" alt="{p['name']}">
             <div class="card-body">
                 <p style="font-size:11px;letter-spacing:1px;color:#888">{p['cat'].upper()}</p>
                 <h3>{p['name']}</h3>
@@ -196,9 +199,17 @@ def render_products(filter_name="all"):
             </div>
         """
         card.addEventListener("click", keep(open_product))
+        card.querySelector("img").addEventListener("error", keep(on_image_error))
         grid.appendChild(card)
     for btn in document.querySelectorAll(".add-btn"):
         btn.addEventListener("click", keep(on_add_click))
+
+def on_image_error(event):
+    image = event.currentTarget
+    if image.getAttribute("data-fallback"):
+        return
+    image.setAttribute("data-fallback", "true")
+    image.src = "https://via.placeholder.com/500?text=EveryWear"
 
 def validate_email(e): return "@" in e and "." in e and len(e) > 5
 def validate_password(pw): return len(pw) >= 8 and any(c.isupper() for c in pw) and any(c.isdigit() for c in pw)
@@ -228,7 +239,10 @@ def do_register(e):
     def go(): 
         document.getElementById("register-modal").classList.remove("open")
         document.getElementById("login-modal").classList.add("open")
-    window.setTimeout(keep(go), 1200)
+    async def go_later():
+        await asyncio.sleep(1.2)
+        go()
+    asyncio.create_task(go_later())
 
 def do_login(e):
     for el in document.querySelectorAll(".error"): el.style.display = "none"
